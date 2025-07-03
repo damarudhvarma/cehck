@@ -1,22 +1,25 @@
 "use client";
-import React from "react";
-import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 
-const World = dynamic(() => import("./Globe").then((mod) => mod.World), {
+// Dynamically import Globe component
+const Globe = dynamic(() => import('./Globe').then((mod) => mod.Globe), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-    </div>
-  ),
-});
-
-const Globe = dynamic(() => import("./Globe").then((m) => m.Globe), {
-  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center">Loading Globe...</div>
 });
 
 const GridGlobe = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="w-full h-full flex items-center justify-center">Loading Globe...</div>;
+  }
+
   const globeConfig = {
     pointSize: 4,
     globeColor: "#062056",
@@ -56,7 +59,7 @@ const GridGlobe = () => {
 
   return (
     <div className="w-full h-full">
-      <World globeConfig={globeConfig} data={data} />
+      <Globe globeConfig={globeConfig} data={data} />
     </div>
   );
 };

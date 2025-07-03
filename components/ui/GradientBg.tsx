@@ -42,15 +42,16 @@ export const BackgroundGradientAnimation = ({
   const [tgY, setTgY] = useState(0);
   const [isSafari, setIsSafari] = useState(false);
 
-  // Only run on client-side
   useEffect(() => {
     setMounted(true);
-    const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    setIsSafari(isSafariBrowser);
+    if (typeof window !== 'undefined') {
+      const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(window.navigator.userAgent);
+      setIsSafari(isSafariBrowser);
+    }
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || typeof document === 'undefined') return;
     
     const root = document.documentElement;
     root.style.setProperty("--gradient-background-start", gradientBackgroundStart);
@@ -63,10 +64,10 @@ export const BackgroundGradientAnimation = ({
     root.style.setProperty("--pointer-color", pointerColor);
     root.style.setProperty("--size", size);
     root.style.setProperty("--blending-value", blendingValue);
-  }, [mounted]);
+  }, [mounted, gradientBackgroundStart, gradientBackgroundEnd, firstColor, secondColor, thirdColor, fourthColor, fifthColor, pointerColor, size, blendingValue]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !interactiveRef.current) return;
     
     function move() {
       if (!interactiveRef.current) return;
@@ -77,7 +78,7 @@ export const BackgroundGradientAnimation = ({
     }
 
     move();
-  }, [tgX, tgY, mounted]);
+  }, [tgX, tgY, mounted, curX, curY]);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!interactiveRef.current) return;
@@ -87,9 +88,12 @@ export const BackgroundGradientAnimation = ({
     setTgY(event.clientY - rect.top);
   };
 
-  // Don't render anything until mounted
   if (!mounted) {
-    return null;
+    return (
+      <div className={cn("h-screen w-screen relative overflow-hidden top-0 left-0 bg-[radial-gradient(at_center,_var(--gradient-background-start),_var(--gradient-background-end))]", containerClassName)}>
+        <div className={cn("", className)}>{children}</div>
+      </div>
+    );
   }
 
   return (
