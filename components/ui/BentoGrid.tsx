@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import { FaPhoneAlt } from "react-icons/fa";
 
@@ -57,8 +57,13 @@ export const BentoGridItem = ({
   const leftLists = ["ReactJS", "Express", "Typescript"];
   const rightLists = ["VueJS", "NuxtJS", "GraphQL"];
 
+  const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
   const [phoneNumberCopied, setPhoneNumberCopied] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const defaultOptions = {
     loop: copied || phoneNumberCopied,
@@ -69,19 +74,59 @@ export const BentoGridItem = ({
     },
   };
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
+    if (!mounted) return;
+    
     const text = "pranneth.32@gmail.com";
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
-  const handlePhoneCopy = () => {
-    const phoneNumber = "+1 (469) 471-6425"; 
-    navigator.clipboard.writeText(phoneNumber);
-    setPhoneNumberCopied(true);
-    setTimeout(() => setPhoneNumberCopied(false), 3000);
+  const handlePhoneCopy = async () => {
+    if (!mounted) return;
+    
+    const phoneNumber = "+1 (469) 471-6425";
+    try {
+      await navigator.clipboard.writeText(phoneNumber);
+      setPhoneNumberCopied(true);
+      setTimeout(() => setPhoneNumberCopied(false), 3000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
+
+  // Don't render copy buttons until mounted
+  if (!mounted && (id === 6 || id === 7)) {
+    return (
+      <div
+        className={cn(
+          "row-span-1 relative overflow-hidden rounded-3xl border border-white/[0.1] group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none justify-between flex flex-col",
+          className
+        )}
+        style={{
+          background: "rgb(4,7,29)",
+          backgroundColor:
+            "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
+        }}
+      >
+        <div className="flex flex-col h-full p-6">
+          <div className="flex-grow">
+            <div className="font-sans font-extralight text-sm text-[#C1C2D3] mb-2">
+              {description}
+            </div>
+            <div className="font-sans text-2xl font-bold text-white mb-6">
+              {title}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
