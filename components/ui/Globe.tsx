@@ -58,14 +58,14 @@ export function World(props: WorldProps) {
 
   useEffect(() => {
     if (!mounted) return;
-    
+
     const updateAspect = () => {
       setAspect(window.innerWidth / window.innerHeight);
     };
-    
+
     updateAspect();
-    window.addEventListener('resize', updateAspect);
-    return () => window.removeEventListener('resize', updateAspect);
+    window.addEventListener("resize", updateAspect);
+    return () => window.removeEventListener("resize", updateAspect);
   }, [mounted]);
 
   if (!mounted) {
@@ -75,7 +75,7 @@ export function World(props: WorldProps) {
   const { globeConfig } = props;
   const scene = new Scene();
   scene.fog = new Fog(0xffffff, 400, 2000);
-  
+
   return (
     <Canvas scene={scene} camera={new PerspectiveCamera(50, aspect, 180, 1800)}>
       <WebGLRendererConfig />
@@ -118,7 +118,7 @@ export function WebGLRendererConfig() {
 
   useEffect(() => {
     if (!mounted) return;
-    
+
     gl.setPixelRatio(window.devicePixelRatio);
     gl.setSize(size.width, size.height);
     gl.setClearColor(0xffaaff, 0);
@@ -138,7 +138,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
   useEffect(() => {
     if (!mounted || !globeRef.current) return;
 
-    globeRef.current.hexPolygonsData(countries.features);
+    globeRef.current.polygonsData(countries.features);
     globeRef.current.hexPolygonResolution(3);
     globeRef.current.hexPolygonMargin(0.7);
     globeRef.current.showAtmosphere(globeConfig.showAtmosphere);
